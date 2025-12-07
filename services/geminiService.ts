@@ -3,31 +3,7 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { GeneratedResult, GeneratorType, PersonaData } from "../types";
 
 // The API Key provided for this application
-const API_KEY = "AIzaSyDqf9txn9OcvQibIPwXnU1n3081W9-mya0";
-
-// Mock data fallback ONLY used if the API call physically fails
-const MOCK_DATA: GeneratedResult = {
-  persona: {
-    name: "Alex Rivera",
-    role: "Freelance Graphic Designer",
-    goals: ["Increase client base", "Streamline workflow", "Create high-quality outputs quickly"],
-    needs: ["Reliable software tools", "Asset management system", "Fast rendering capabilities"],
-    pains: ["Inconsistent client feedback", "Software subscription costs", "Time-consuming file exports"],
-    tasks: ["Sourcing images", "Creating mockups", "Communicating with clients via email"]
-  },
-  jtbd: [
-    {
-      situation: "When I am starting a new branding project",
-      motivation: "I want to quickly access a library of high-quality vector assets",
-      outcome: "so I can present professional concepts to my client without spending hours drawing from scratch."
-    },
-    {
-      situation: "When I receive feedback from a client",
-      motivation: "I want to easily iterate on the design versions",
-      outcome: "so I can maintain a clear history of changes and approval."
-    }
-  ]
-};
+const API_KEY = "AIzaSyAvoRKm6oVglTnYNbxM6fyPmUzRjZqBKSk";
 
 export const generateUXData = async (
   context: string,
@@ -36,8 +12,7 @@ export const generateUXData = async (
 ): Promise<GeneratedResult> => {
   
   if (!API_KEY) {
-    console.warn("No API Key configured.");
-    return MOCK_DATA;
+    throw new Error("No API Key configured.");
   }
 
   try {
@@ -126,7 +101,6 @@ export const generateUXData = async (
 
   } catch (error) {
     console.error("Gemini API Error:", error);
-    // Only fall back to mock data if the API call genuinely fails
-    return MOCK_DATA;
+    throw error; // Re-throw to be caught by App.tsx for toast handling
   }
 };
