@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import Button from './Button';
@@ -43,7 +44,7 @@ const LandingScreen: React.FC<LandingScreenProps> = ({ onStart }) => {
             onClick={onStart} 
             className="bg-primary-600 hover:bg-primary-500 text-white px-8 py-4 text-lg rounded-xl font-semibold shadow-lg shadow-primary-900/50 hover:shadow-primary-600/30 transition-all transform hover:-translate-y-1"
         >
-          Start New Project <ArrowRight className="ml-2 w-5 h-5 inline" />
+          Create First Artifact <ArrowRight className="ml-2 w-5 h-5 inline" />
         </Button>
       </div>
     </div>

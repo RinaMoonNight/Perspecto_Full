@@ -2,7 +2,10 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { GeneratedResult, GeneratorType, PersonaData } from "../types";
 
-// Mock data fallback in case of API failure or if environment key is missing (for demo purposes)
+// The API Key provided for this application
+const API_KEY = "AIzaSyDqf9txn9OcvQibIPwXnU1n3081W9-mya0";
+
+// Mock data fallback ONLY used if the API call physically fails
 const MOCK_DATA: GeneratedResult = {
   persona: {
     name: "Alex Rivera",
@@ -31,15 +34,14 @@ export const generateUXData = async (
   type: GeneratorType,
   existingPersona?: PersonaData
 ): Promise<GeneratedResult> => {
-  const apiKey = process.env.API_KEY;
-
-  if (!apiKey) {
-    console.warn("No API Key found, using mock data.");
-    return new Promise((resolve) => setTimeout(() => resolve(MOCK_DATA), 2000));
+  
+  if (!API_KEY) {
+    console.warn("No API Key configured.");
+    return MOCK_DATA;
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     const schema: Schema = {
       type: Type.OBJECT,
@@ -71,10 +73,10 @@ export const generateUXData = async (
       },
     };
 
-    let prompt = `You are an expert UX Researcher. Analyze the following Project Context: "${context}".`;
+    let prompt = `You are an expert UX Researcher. Analyze the following specific Project Context: "${context}".`;
 
     if (type === 'persona') {
-      prompt += ` Generate a detailed User Persona for this project.`;
+      prompt += ` Generate a unique and detailed User Persona specifically for this project context. Do not use generic placeholders.`;
     } else if (type === 'jtbd') {
       if (existingPersona) {
         prompt += `\n\nBased specifically on this User Persona:
@@ -88,7 +90,7 @@ export const generateUXData = async (
         prompt += ` Generate 3 specific Jobs To Be Done (JTBD) statements for this project using the format: When I..., I want to..., So I can...`;
       }
     } else {
-      prompt += ` Generate both a User Persona and 3 Jobs To Be Done (JTBD) statements for this project.`;
+      prompt += ` Generate both a unique User Persona and 3 Jobs To Be Done (JTBD) statements specifically for this project context.`;
     }
 
     const response = await ai.models.generateContent({
@@ -97,7 +99,7 @@ export const generateUXData = async (
       config: {
         responseMimeType: "application/json",
         responseSchema: schema,
-        temperature: 0.7, 
+        temperature: 0.8, // Slightly higher temperature for more creativity/uniqueness
       },
     });
 
@@ -124,7 +126,7 @@ export const generateUXData = async (
 
   } catch (error) {
     console.error("Gemini API Error:", error);
-    // Fallback to mock data on error allows the UI to continue working for demo purposes
+    // Only fall back to mock data if the API call genuinely fails
     return MOCK_DATA;
   }
 };
